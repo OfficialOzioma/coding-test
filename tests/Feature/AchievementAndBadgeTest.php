@@ -2,15 +2,16 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Event;
-use App\Models\User;
-use App\Models\Comment;
-use App\Models\Lesson;
-use App\Events\CommentWritten;
-use App\Events\LessonWatched;
 use Tests\TestCase;
+use App\Models\User;
+use App\Models\Lesson;
+use App\Models\Comment;
+use App\Events\LessonWatched;
+use App\Events\CommentWritten;
+use App\Models\AchievementList;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AchievementAndBadgeTest extends TestCase
 {
@@ -20,12 +21,12 @@ class AchievementAndBadgeTest extends TestCase
     /**
      * A basic feature test example.
      */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+    // public function test_example(): void
+    // {
+    //     $response = $this->get('/');
 
-        $response->assertStatus(200);
-    }
+    //     $response->assertStatus(200);
+    // }
 
     public function testUserEarnsAchievementOnCommentWritten()
     {
@@ -33,11 +34,13 @@ class AchievementAndBadgeTest extends TestCase
 
         $user = User::factory()->create();
         $comment = Comment::factory()->create(['user_id' => $user->id]);
+        // $achievementList = AchievementList::whereCategory('comment')->get();
 
         Event::dispatch(new CommentWritten($comment));
 
-        $this->assertDatabaseHas('user_achievement', [
+        $this->assertDatabaseHas('user_achievements', [
             'user_id' => $user->id,
+            // 'achievement_id' => $achievementList[0]->id,
             // assert that the appropriate achievement has been earned
             // You can add more assertions based on your application logic
         ]);

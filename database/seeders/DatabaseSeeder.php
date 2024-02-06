@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
             //     ->get();
 
             // Create a comment for the user
-            Comment::factory()->count(rand(1, 20))->create(['user_id' => $user->id]);
+            Comment::factory()->count(rand(1, 20))->create();
 
             // Update user's comment count
             $user->update(['comment_count' => $user->comments()->count()]);
