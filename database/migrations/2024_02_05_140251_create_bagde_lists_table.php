@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('badge_lists', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->default('Beginner');
+            $table->integer('condition')->default(0);
             $table->timestamps();
         });
     }

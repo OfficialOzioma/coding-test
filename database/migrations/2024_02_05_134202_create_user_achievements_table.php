@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('user_achievements', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
+            $table->foreignId('achievement_list_id');
             $table->timestamps();
         });
     }

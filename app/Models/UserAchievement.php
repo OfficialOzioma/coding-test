@@ -11,11 +11,16 @@ class UserAchievement extends Model
 
     protected $fillable = [
         'user_id',
-        'achievement_id'
+        'achievement_list_id'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function achievement()
+    {
+        return $this->belongsTo(AchievementList::class);
     }
 }

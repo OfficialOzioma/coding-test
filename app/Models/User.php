@@ -54,13 +54,13 @@ class User extends Authenticatable
 
     public function achievements()
     {
-        return $this->belongsToMany(AchievementList::class, 'user_achievement', 'user_id', 'achievement_id');
+        return $this->belongsToMany(AchievementList::class, 'user_achievements', 'user_id', 'achievement_list_id');
     }
 
     public function badges()
     {
 
-        return $this->belongsToMany(BadgeList::class, 'user_badge', 'user_id', 'badge_id');
+        return $this->belongsToMany(BadgeList::class, 'user_badges', 'user_id', 'badge_list_id');
     }
     /**
      * The lessons that a user has access to.

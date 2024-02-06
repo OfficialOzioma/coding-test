@@ -11,7 +11,7 @@ class UserBadge extends Model
 
     protected $fillable = [
         'user_id',
-        'badge_id'
+        'badge_list_id'
     ];
 
     public function user()

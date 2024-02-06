@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('achievement_lists', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('category');
+            $table->integer('condition');
             $table->timestamps();
         });
     }
