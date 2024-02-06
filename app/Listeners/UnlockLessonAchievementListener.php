@@ -29,8 +29,9 @@ class UnlockLessonAchievementListener
         $lessonWatched = $event->user->watched()->count();
 
         // check if any achievements have been matched
-        $achievement = AchievementList::whereCategory('Lesson')->whereCondition($lessonWatched)->first();
+        $achievement = AchievementList::whereCategory('lesson')->whereCondition($lessonWatched)->first();
 
+        // if there is a match unlock an achievement
         if ($achievement) {
             event(new AchievementUnlocked($achievement->name, $event->user));
         }

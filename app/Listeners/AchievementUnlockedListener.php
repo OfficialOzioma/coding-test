@@ -23,6 +23,7 @@ class AchievementUnlockedListener
      */
     public function handle(AchievementUnlocked $event): void
     {
+        // Get the achievement name
         $achievementName = $event->achievementName;
 
         // find achievement from the achievement list

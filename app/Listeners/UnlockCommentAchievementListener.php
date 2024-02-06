@@ -25,13 +25,14 @@ class UnlockCommentAchievementListener
      */
     public function handle(CommentWritten $event): void
     {
+        // Get the user
         $user = $event->comment->user;
 
         // check the number of comment by the user;
         $commentCount = $user->comment_count;
 
         // Check the achievements that match with the comment count
-        $achievement = AchievementList::whereCategory('Comment')->whereCondition($commentCount)->first();
+        $achievement = AchievementList::whereCategory('comment')->whereCondition($commentCount)->first();
 
         // if there is a match unlock an achievement
         if ($achievement) {

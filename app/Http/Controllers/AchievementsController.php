@@ -27,13 +27,16 @@ class AchievementsController extends Controller
         // Get the current badge and the next badge
         $currentBadge = $user->badges->first();
 
+        // Get the next badge
         $nextBadge = $achievementService->nextBadge($user);
 
+        // Get the condition for the next badge
         $condition = $nextBadge ? $nextBadge->condition : 0;
 
         // Calculate the remaining achievements needed for the next badge
         $remainingToUnlockNextBadge = max(0, $condition - $user->achievements->count());
 
+        // Return the response
         return response()->json([
             'unlocked_achievements' => $unlockedAchievements,
             'next_available_achievements' => $nextAvailableAchievements,

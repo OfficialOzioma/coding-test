@@ -23,12 +23,6 @@ class DatabaseSeeder extends Seeder
         // Call the AchievementListSeeder
         $this->call(AchievementListSeeder::class);
 
-        // Get badge IDs
-        $badgeIds = BadgeList::pluck('id');
-
-        // Get achievement lists
-        $achievements = AchievementList::all();
-
         $lessons = Lesson::factory()
             ->count(20)
             ->create();
@@ -48,33 +42,39 @@ class DatabaseSeeder extends Seeder
             Comment::factory()->count(rand(1, 20))->create();
 
             // Update user's comment count
-            $user->update(['comment_count' => $user->comments()->count()]);
+            $user->comment_count += 1;
+            $user->save();
+
             // Get random lessons for the user to watch
             $watchedLessons = $lessons->random(rand(1, 5));
 
-
-            // $user->watched()->attach($lessons);
             // Attach the lessons to the user with the 'watched' field set to true in the pivot table
             $user->watched()->attach($watchedLessons, ['watched' => true]);
 
 
             // Assign achievements based on the number of lessons watched
             $lessonsWatched = $user->watched()->count();
+
             $lessonsAchievements = AchievementList::whereCategory('lesson')
                 ->whereCondition($lessonsWatched)
                 ->pluck('id');
+
             $user->achievements()->attach($lessonsAchievements);
 
             // Assign achievements based on the user's comment count
             $commentCount = $user->comment_count;
+
             $commentAchievements = AchievementList::whereCategory('comment')
                 ->whereCondition($commentCount)
                 ->pluck('id');
+
             $user->achievements()->attach($commentAchievements);
 
             // Assign badges based on the number of achievements
             $achievementCount = $user->achievements()->count();
+
             $badgesToAssign = BadgeList::whereCondition($achievementCount)->pluck('id');
+
             $user->badges()->syncWithoutDetaching($badgesToAssign);
         }
     }
