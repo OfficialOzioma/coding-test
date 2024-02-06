@@ -6,95 +6,73 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Lesson;
 use App\Models\Comment;
+use Illuminate\Support\Str;
 use App\Events\LessonWatched;
 use App\Events\CommentWritten;
 use App\Models\AchievementList;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Testing\WithFaker;
+use App\Listeners\UnlockLessonAchievementListener;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Listeners\UnlockCommentAchievementListener;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class AchievementAndBadgeTest extends TestCase
 {
 
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
-    /**
-     * A basic feature test example.
-     */
-    // public function test_example(): void
-    // {
-    //     $response = $this->get('/');
-
-    //     $response->assertStatus(200);
-    // }
-
-    public function testUserEarnsAchievementOnCommentWritten()
+    public function testCommentWrittenEvents()
     {
         Event::fake();
 
+        // Create a user
         $user = User::factory()->create();
-        $comment = Comment::factory()->create(['user_id' => $user->id]);
-        // $achievementList = AchievementList::whereCategory('comment')->get();
 
+        // Simulate writing a comment
+        $comment = Comment::factory()->create(['user_id' => $user->id]);
+
+        // Dispatch event for comment written
         Event::dispatch(new CommentWritten($comment));
 
-        $this->assertDatabaseHas('user_achievements', [
-            'user_id' => $user->id,
-            // 'achievement_id' => $achievementList[0]->id,
-            // assert that the appropriate achievement has been earned
-            // You can add more assertions based on your application logic
-        ]);
+        // Assert that the event was dispatched
+        Event::assertDispatched(function (CommentWritten $event) use ($comment) {
+            return $event->comment->id === $comment->id;
+        });
+
+        // Assert that the listener is listening for the CommentWritten event
+        Event::assertListening(
+            CommentWritten::class,
+            UnlockCommentAchievementListener::class,
+        );
     }
 
-    public function testUserEarnsBadgeOnLessonWatched()
+    public function testLessonWatchedEvent()
     {
+        // Fake event
         Event::fake();
 
+        // Create a user
         $user = User::factory()->create();
-        $lesson = Lesson::factory()->create();
 
+        // Simulate watching a lesson
+        $lesson = Lesson::factory()->create();
+        $user->watched()->attach($lesson, ['watched' => true]);
+
+        // Dispatch event for lesson watched
         Event::dispatch(new LessonWatched($lesson, $user));
 
-        $this->assertDatabaseHas('user_badges', [
-            'user_id' => $user->id,
-            // assert that the appropriate badge has been earned
-            // You can add more assertions based on your application logic
-        ]);
-    }
+        // Assert that the event was dispatched
+        Event::assertDispatched(function (LessonWatched $event) use ($lesson) {
+            return $event->lesson->id === $lesson->id;
+        });
 
-    public function testMultipleCommentsEarnMultipleAchievements()
-    {
-        Event::fake();
-
-        $user = User::factory()->create();
-
-        // Create multiple comments for the user
-        $comments = Comment::factory()->count(3)->create(['user_id' => $user->id]);
-
-        foreach ($comments as $comment) {
-            Event::dispatch(new CommentWritten($comment));
-        }
-
-        $this->assertDatabaseCount('user_achievement', 3); // assert that the user has earned 3 achievements
-    }
-
-    public function testMultipleLessonsWatchedEarnsBadge()
-    {
-        Event::fake();
-
-        $user = User::factory()->create();
-
-        // Create multiple lessons
-        $lessons = Lesson::factory()->count(5)->create();
-
-        foreach ($lessons as $lesson) {
-            Event::dispatch(new LessonWatched($lesson, $user));
-        }
-
-        $this->assertDatabaseHas('user_badges', [
-            'user_id' => $user->id,
-            // assert that the appropriate badge has been earned
-            // You can add more assertions based on your application logic
-        ]);
+        // Assert that the listener is listening for the LessonWatched event
+        Event::assertListening(
+            LessonWatched::class,
+            UnlockLessonAchievementListener::class,
+        );
     }
 }

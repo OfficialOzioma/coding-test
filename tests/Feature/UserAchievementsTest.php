@@ -34,11 +34,11 @@ class UserAchievementsTest extends TestCase
 
         // Assert response content
         $response->assertJson([
-            'unlocked_achievements' => [], // Your expected unlocked achievements
-            'next_available_achievements' => [], // Your expected next available achievements
-            'current_badge' => null, // Your expected current badge or null
-            'next_badge' => null, // Your expected next badge or null
-            'remaining_to_unlock_next_badge' => 0, // Your expected remaining count to unlock next badge
+            'unlocked_achievements' => [],
+            'next_available_achievements' => [],
+            'current_badge' => null,
+            'next_badge' => null,
+            'remaining_to_unlock_next_badge' => 0,
         ]);
     }
 }

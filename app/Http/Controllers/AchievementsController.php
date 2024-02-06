@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\AchievementService;
 use App\Models\User;
-use Illuminate\Http\Request;
-use App\Models\AchievementList;
+use App\Models\Comment;
 use App\Models\BadgeList;
 use App\Models\UserBadge;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Events\CommentWritten;
+use App\Models\AchievementList;
+use App\Services\AchievementService;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Event;
 
 class AchievementsController extends Controller
 {
@@ -24,11 +29,10 @@ class AchievementsController extends Controller
 
         $nextBadge = $achievementService->nextBadge($user);
 
+        $condition = $nextBadge ? $nextBadge->condition : 0;
+
         // Calculate the remaining achievements needed for the next badge
-        $remainingToUnlockNextBadge = max(0, $nextBadge->condition - $user->achievements->count());
-        // $remainingToUnlockNextBadge = $achievementService->nextBadgeCondition($user);
-
-
+        $remainingToUnlockNextBadge = max(0, $condition - $user->achievements->count());
 
         return response()->json([
             'unlocked_achievements' => $unlockedAchievements,

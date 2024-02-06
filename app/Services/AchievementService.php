@@ -12,27 +12,27 @@ class AchievementService
     {
         // Get the highest achieved conditions for each category using relationships
         $highestCommentCondition = $user->achievements()
-            ->where('category', 'comment')
+            ->whereCategory('comment')
             ->max('condition');
 
         $highestLessonCondition = $user->achievements()
-            ->where('category', 'lesson')
+            ->whereCategory('lesson')
             ->max('condition');
 
         // Get the next achievements for each category
-        $nextCommentAchievement = AchievementList::where('category', 'comment')
+        $nextCommentAchievement = AchievementList::whereCategory('comment')
             ->where('condition', '>', $highestCommentCondition ?? 0)
             ->orderBy('condition')
-            ->first()->toArray();
+            ->first();
 
-        $nextLessonAchievement = AchievementList::where('category', 'lesson')
+        $nextLessonAchievement = AchievementList::whereCategory('lesson')
             ->where('condition', '>', $highestLessonCondition ?? 0)
             ->orderBy('condition')
-            ->first()->toArray();
+            ->first();
 
         return [
-            'comment' => $nextCommentAchievement['name'],
-            'lesson' => $nextLessonAchievement['name'],
+            'comment' => $nextCommentAchievement->name ?? null,
+            'lesson' => $nextLessonAchievement->name ?? null,
         ];
     }
 
