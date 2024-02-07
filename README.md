@@ -68,6 +68,12 @@ composer install
 
 check the .env.testing file to update the credentials to match your configuration
 
+- Run migration and seed the sqlite database using the .env.testing file
+
+    ```
+    php artisan migrate --seed --env=testing
+    ```
+
 - To test run the Laravel artisan Test command below
 
     ```
